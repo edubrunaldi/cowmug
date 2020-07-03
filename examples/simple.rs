@@ -2,8 +2,8 @@ extern crate cow_mug;
 use cow_mug::Prompt;
 
 fn main() {
-    let prompt = Prompt::default();
+    let mut prompt = Prompt::default();
     prompt
-        .wait_question()
+        .write_question("Pergunta???".to_string())
         .expect("erro ao sair do wait question");
 }

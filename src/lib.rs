@@ -2,6 +2,7 @@ mod prompt;
 mod terminal;
 
 pub use prompt::Prompt;
+pub use terminal::CursorMove;
 pub use terminal::Terminal;
 
 #[cfg(test)]
