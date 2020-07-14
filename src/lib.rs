@@ -1,7 +1,9 @@
 mod prompt;
+mod question;
 mod terminal;
 
 pub use prompt::Prompt;
+pub use question::Question;
 pub use terminal::CursorMove;
 pub use terminal::Terminal;
 
