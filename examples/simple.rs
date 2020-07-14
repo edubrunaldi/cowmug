@@ -10,5 +10,17 @@ fn main() {
     v.push(q);
 
     let mut prompt = Prompt::new();
-    prompt.exec(&mut v);
+    prompt
+        .exec(&mut v)
+        .ok()
+        .expect("Error While using prompt.exec");
+
+    for i in v {
+        println!(
+            "question: {} \n answer: {:?}",
+            i.get_question(),
+            i.get_answer()
+        );
+    }
+    return;
 }

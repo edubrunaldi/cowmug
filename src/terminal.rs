@@ -1,4 +1,5 @@
 use std::io::{self, stdout, Write};
+use termion::cursor::DetectCursorPos;
 use termion::event::Key;
 use termion::input::TermRead;
 use termion::raw::{IntoRawMode, RawTerminal};
@@ -8,15 +9,16 @@ pub enum CursorMove {
     Down,
 }
 
+// #[derive(Clone)]
 pub struct Terminal {
-    stdout: RawTerminal<std::io::Stdout>,
+    x: u16,
+    y: u16,
 }
 
 impl Terminal {
     pub fn default() -> Result<Self, std::io::Error> {
-        Ok(Self {
-            stdout: stdout().into_raw_mode()?,
-        })
+        let (x, y) = stdout().into_raw_mode().unwrap().cursor_pos().unwrap();
+        Ok(Self { x, y })
     }
 
     pub fn read_key() -> Result<Key, std::io::Error> {
@@ -43,8 +45,16 @@ impl Terminal {
         print!("{}", termion::cursor::Goto(1, 1),);
     }
 
+    pub fn clean_after_cursor(&mut self) {
+        print!("{}", termion::clear::AfterCursor);
+    }
+
     pub fn flush() -> Result<(), std::io::Error> {
         io::stdout().flush()
+    }
+
+    pub fn reset_cursor_position(&mut self) {
+        print!("{}", termion::cursor::Goto(self.x, self.y));
     }
 
     pub fn cursor_position(&mut self, position: usize) {
@@ -63,4 +73,14 @@ impl Terminal {
     pub fn clear_current_line() {
         print!("{}", termion::clear::CurrentLine);
     }
+
+    pub fn read_line() -> String {
+        let mut line = String::new();
+        io::stdin()
+            .read_line(&mut line)
+            .expect("Cannot read from terminal");
+        line
+    }
+
+    pub fn save_postion(&mut self) {}
 }

@@ -18,27 +18,47 @@ impl Prompt {
         }
     }
 
-    pub fn exec(&mut self, questions: &mut Vec<Question>) {
+    pub fn exec(&mut self, questions: &mut Vec<Question>) -> Result<(), std::io::Error> {
         for question in questions {
-            println!("{:?}", question.get_question());
+            // self.refresh_screen()?;
+            self.refresh_screen(&question)?;
+            let answer = Terminal::read_line();
+            self.terminal.write(answer.trim());
+            match answer.trim() {
+                "y" => question.set_answer(true),
+                "n" => question.set_answer(false),
+                _ => (),
+            };
         }
+        Terminal::flush()?;
+        Ok(())
     }
 
-    fn refresh_screen(&mut self) -> Result<(), std::io::Error> {
+    fn refresh_screen(&mut self, question: &Question) -> Result<(), std::io::Error> {
+        self.terminal.reset_cursor_position();
+        self.terminal.clean_after_cursor();
         Terminal::cursor_hide();
-        self.terminal.cursor_position(self.cursor_position);
+        self.draw(question);
         Terminal::cursor_show();
         Terminal::flush()
     }
 
-    fn process_keypress(&mut self) -> Result<(), std::io::Error> {
-        let pressed_key = Terminal::read_key()?;
-        match pressed_key {
-            Key::Char('q') => print!("aaa"),
-            _ => (),
-        }
+    fn draw(&self, question: &Question) {
+        print!("{}", question.get_question());
+    }
 
-        Ok(())
+    fn process_keypress(&mut self) -> Result<String, std::io::Error> {
+        let answer = Terminal::read_line();
+        loop {
+            let pressed_key = Terminal::read_key()?;
+            self.terminal.write(answer.as_str());
+            match pressed_key {
+                Key::Ctrl('q') => {
+                    return Ok(answer);
+                }
+                _ => print!("{:?}", pressed_key),
+            }
+        }
     }
 }
 
