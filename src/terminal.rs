@@ -11,14 +11,29 @@ pub enum CursorMove {
 
 // #[derive(Clone)]
 pub struct Terminal {
+    stdout: Option<RawTerminal<io::Stdout>>,
     x: u16,
     y: u16,
 }
 
 impl Terminal {
     pub fn default() -> Result<Self, std::io::Error> {
+        Ok(Self {
+            x: 0,
+            y: 0,
+            stdout: None,
+        })
+    }
+
+    pub fn hold_stdout(&mut self) {
+        self.stdout = Some(stdout().into_raw_mode().unwrap());
         let (x, y) = stdout().into_raw_mode().unwrap().cursor_pos().unwrap();
-        Ok(Self { x, y })
+        self.x = x;
+        self.y = y;
+    }
+
+    pub fn free_stdout(&mut self) {
+        self.stdout = None;
     }
 
     pub fn read_key() -> Result<Key, std::io::Error> {
@@ -29,8 +44,12 @@ impl Terminal {
         }
     }
 
-    pub fn write(&mut self, msg: &str) {
-        print!("{}\r", msg);
+    pub fn write(&mut self, msg: &str) -> Result<(), std::io::Error> {
+        // TODO throw error if stdout is none
+        if self.stdout.is_none() {
+            return Ok(());
+        }
+        write!(self.stdout.as_mut().unwrap(), "{}\r", msg)
     }
 
     pub fn show(&mut self) {
@@ -60,6 +79,15 @@ impl Terminal {
     pub fn cursor_position(&mut self, position: usize) {
         let p = position.saturating_add(1) as u16;
         print!("{}", termion::cursor::Goto(0, p));
+    }
+    pub fn move_cursor_vertical(&mut self, position: usize) {
+        let p = position.saturating_add(1) as u16;
+        print!("{}", termion::cursor::Goto(self.x, p));
+    }
+
+    pub fn move_cursor_horizontal(&mut self, position: usize) {
+        let p = position.saturating_add(1) as u16;
+        print!("{}", termion::cursor::Goto(p, self.y));
     }
 
     pub fn cursor_hide() {

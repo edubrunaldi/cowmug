@@ -19,11 +19,11 @@ impl Prompt {
     }
 
     pub fn exec(&mut self, questions: &mut Vec<Question>) -> Result<(), std::io::Error> {
+        self.terminal.hold_stdout();
         for question in questions {
             // self.refresh_screen()?;
             self.refresh_screen(&question)?;
-            let answer = Terminal::read_line();
-            self.terminal.write(answer.trim());
+            let answer = self.process_keypress()?;
             match answer.trim() {
                 "y" => question.set_answer(true),
                 "n" => question.set_answer(false),
@@ -31,6 +31,7 @@ impl Prompt {
             };
         }
         Terminal::flush()?;
+        self.terminal.free_stdout();
         Ok(())
     }
 
@@ -39,24 +40,31 @@ impl Prompt {
         self.terminal.clean_after_cursor();
         Terminal::cursor_hide();
         self.draw(question);
+        self.terminal
+            .move_cursor_horizontal(question.get_question().len());
         Terminal::cursor_show();
         Terminal::flush()
     }
 
-    fn draw(&self, question: &Question) {
-        print!("{}", question.get_question());
+    fn draw(&mut self, question: &Question) {
+        self.terminal
+            .write(question.get_question().as_str())
+            .unwrap();
     }
 
     fn process_keypress(&mut self) -> Result<String, std::io::Error> {
-        let answer = Terminal::read_line();
+        let mut answer = String::new();
         loop {
             let pressed_key = Terminal::read_key()?;
-            self.terminal.write(answer.as_str());
             match pressed_key {
-                Key::Ctrl('q') => {
+                Key::Char('\n') => {
                     return Ok(answer);
                 }
-                _ => print!("{:?}", pressed_key),
+                Key::Char('\r') => {
+                    return Ok(answer);
+                }
+                Key::Char(pressed_key) => answer.push(pressed_key),
+                _ => (),
             }
         }
     }
