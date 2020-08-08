@@ -20,10 +20,6 @@ impl Prompt {
             next_question: false,
         }
     }
-    fn test() {
-        let five_sec = time::Duration::from_secs(2);
-        thread::sleep(five_sec);
-    }
 
     pub fn exec(&mut self, questions: &mut Vec<QuestionList>) -> Result<(), std::io::Error> {
         self.terminal.hold_stdout();
@@ -32,7 +28,6 @@ impl Prompt {
             self.next_question = false;
             self.cursor_position = 0;
             self.cursor_last_position = 0;
-            // self.draw(question);
             while !self.next_question {
                 self.refresh_screen(&question);
                 self.process_keypress(question.choices().len()).unwrap();
@@ -50,7 +45,6 @@ impl Prompt {
         Terminal::cursor_hide();
         self.terminal.reset_cursor_position();
         self.terminal.clean_after_cursor();
-        // Terminal::flush().unwrap();
         self.draw(question);
         self.terminal.set_cursor_first_choice();
         if self.cursor_last_position > self.cursor_position {
@@ -89,8 +83,6 @@ impl Prompt {
         }
         Ok(())
     }
-
-    fn move_cursor(&self, pressed_key: Key) {}
 }
 
 fn die(e: std::io::Error) {
