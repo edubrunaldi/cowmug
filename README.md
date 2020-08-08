@@ -2,7 +2,7 @@
 
 ![License]
 
-`cowmod` provide a interactive command line user interface to ask
+`cowmod` provide an interactive command line user interface to ask
 questions to user.
 ## !!!! It's on early development and it isn't considered stable yet !!!!
 
