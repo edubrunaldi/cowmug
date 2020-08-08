@@ -3,6 +3,7 @@ use termion::cursor::DetectCursorPos;
 use termion::event::Key;
 use termion::input::TermRead;
 use termion::raw::{IntoRawMode, RawTerminal};
+use termion::{color, style};
 
 pub enum CursorMove {
     Up,
@@ -92,5 +93,12 @@ impl Terminal {
             .read_line(&mut line)
             .expect("Cannot read from terminal");
         line
+    }
+
+    pub fn set_green_color() {
+        print!("{}", color::Fg(color::Green));
+    }
+    pub fn reset_color() {
+        print!("{}", color::Fg(color::Reset));
     }
 }

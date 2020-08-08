@@ -22,7 +22,7 @@ impl Prompt {
     }
 
     pub fn exec(&mut self, questions: &mut Vec<QuestionList>) -> Result<(), std::io::Error> {
-        self.terminal.hold_stdout();
+        self.setup_start();
         for question in questions {
             self.cursor_position = question.choices().len();
             self.next_question = false;
@@ -36,23 +36,27 @@ impl Prompt {
                 }
             }
         }
-        Terminal::flush()?;
-        self.terminal.free_stdout();
+        self.setup_end();
         Ok(())
     }
 
-    fn refresh_screen(&mut self, question: &QuestionList) {
+    fn setup_start(&mut self) {
+        self.terminal.hold_stdout();
         Terminal::cursor_hide();
+    }
+
+    fn setup_end(&mut self) {
+        self.terminal.reset_cursor_position();
+        self.terminal.clean_after_cursor();
+        Terminal::cursor_show();
+        Terminal::flush().unwrap();
+        self.terminal.free_stdout();
+    }
+
+    fn refresh_screen(&mut self, question: &QuestionList) {
         self.terminal.reset_cursor_position();
         self.terminal.clean_after_cursor();
         self.draw(question);
-        self.terminal.set_cursor_first_choice();
-        if self.cursor_last_position > self.cursor_position {
-            self.terminal.move_cursor_up(self.cursor_last_position);
-        } else if self.cursor_last_position < self.cursor_position {
-            self.terminal.move_cursor_down(self.cursor_position);
-        }
-        Terminal::cursor_show();
         Terminal::flush().unwrap();
     }
 
@@ -61,12 +65,15 @@ impl Prompt {
 
         for i in 0..question.choices().len() {
             let mut printable_choice = if i == self.cursor_position {
+                Terminal::set_green_color();
                 String::from("> ")
             } else {
+                Terminal::reset_color();
                 String::from("  ")
             };
             printable_choice.push_str(question.choices().get(i).unwrap().as_str());
             self.terminal.writeln(printable_choice.as_str()).unwrap();
+            Terminal::reset_color();
         }
     }
 
@@ -78,12 +85,18 @@ impl Prompt {
                 if self.cursor_position > 0 {
                     self.cursor_last_position = self.cursor_position;
                     self.cursor_position -= 1;
+                } else {
+                    self.cursor_last_position = self.cursor_position;
+                    self.cursor_position = choices_len - 1;
                 }
             }
             Key::Down => {
                 if self.cursor_position < choices_len - 1 {
                     self.cursor_last_position = self.cursor_position;
                     self.cursor_position += 1;
+                } else {
+                    self.cursor_last_position = self.cursor_position;
+                    self.cursor_position = 0;
                 }
             }
             _ => (),
