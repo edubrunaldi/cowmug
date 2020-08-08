@@ -1,5 +1,5 @@
 use crate::Terminal;
-use crate::{Answer, QuestionList};
+use crate::{Answer, Question};
 use termion::event::Key;
 
 pub struct Prompt {
@@ -19,7 +19,7 @@ impl Prompt {
         }
     }
 
-    pub fn exec(&mut self, questions: &mut Vec<QuestionList>) -> Result<(), std::io::Error> {
+    pub fn exec(&mut self, questions: &mut Vec<Question>) -> Result<(), std::io::Error> {
         self.setup_start();
         for question in questions {
             self.cursor_position = question.choices().len();
@@ -51,20 +51,20 @@ impl Prompt {
 
     fn setup_end(&mut self) {
         self.terminal.reset_cursor_position();
-        self.terminal.clean_after_cursor();
+        Terminal::clean_after_cursor();
         Terminal::cursor_show();
         Terminal::flush().unwrap();
         self.terminal.free_stdout();
     }
 
-    fn refresh_screen(&mut self, question: &QuestionList) {
+    fn refresh_screen(&mut self, question: &Question) {
         self.terminal.reset_cursor_position();
-        self.terminal.clean_after_cursor();
+        Terminal::clean_after_cursor();
         self.draw(question);
         Terminal::flush().unwrap();
     }
 
-    fn draw(&mut self, question: &QuestionList) {
+    fn draw(&mut self, question: &Question) {
         self.terminal.writeln(question.question().as_str()).unwrap();
 
         for i in 0..question.choices().len() {
@@ -107,8 +107,4 @@ impl Prompt {
         }
         Ok(())
     }
-}
-
-fn die(e: std::io::Error) {
-    panic!(e);
 }

@@ -1,4 +1,11 @@
-pub struct QuestionList {
+/// ```rust
+/// pub struct QuestionList
+/// -
+///
+/// A Struct
+///
+///  
+pub struct Question {
     question: String,
     choices: Vec<String>,
     answer: Option<Answer>,
@@ -9,9 +16,9 @@ pub struct Answer {
     pub answer: String,
 }
 
-impl QuestionList {
+impl Question {
     pub fn new(question: String) -> Self {
-        QuestionList {
+        Question {
             question,
             choices: Vec::new(),
             answer: None,
