@@ -1,8 +1,8 @@
-# Cow-Mug
+# CowMug
 
 ![License]
 
-`cow-mod` provide a interactive command line user interface to ask
+`cowmod` provide a interactive command line user interface to ask
 questions to user.
 ## !!!! It's on early development and it isn't considered stable yet !!!!
 
@@ -13,7 +13,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-cow-mug = "0.0.1"
+cowmug = "0.0.1"
 ```
 
 ## License

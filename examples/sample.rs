@@ -1,6 +1,6 @@
-extern crate cow_mug;
-use cow_mug::Prompt;
-use cow_mug::Question;
+extern crate cowmug;
+use cowmug::Prompt;
+use cowmug::Question;
 fn main() {
     let mut list_questions: Vec<Question> = Vec::new();
     let mut pizza_size = Question::new(String::from("Choose the size of your pizza: "));
