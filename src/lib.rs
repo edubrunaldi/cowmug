@@ -3,7 +3,7 @@ mod question;
 mod terminal;
 
 pub use prompt::Prompt;
-pub use question::Question;
+pub use question::QuestionList;
 pub use terminal::CursorMove;
 pub use terminal::Terminal;
 

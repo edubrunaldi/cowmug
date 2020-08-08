@@ -51,6 +51,13 @@ impl Terminal {
         }
         write!(self.stdout.as_mut().unwrap(), "{}\r", msg)
     }
+    pub fn writeln(&mut self, msg: &str) -> Result<(), std::io::Error> {
+        // TODO throw error if stdout is none
+        if self.stdout.is_none() {
+            return Ok(());
+        }
+        writeln!(self.stdout.as_mut().unwrap(), "{}\r", msg)
+    }
 
     pub fn show(&mut self) {
         print!("{}", termion::cursor::Show);
@@ -76,13 +83,23 @@ impl Terminal {
         print!("{}", termion::cursor::Goto(self.x, self.y));
     }
 
+    pub fn set_cursor_first_choice(&self) {
+        let p = self.y.saturating_add(1);
+        print!("{}", termion::cursor::Goto(self.x, p));
+    }
+
     pub fn cursor_position(&mut self, position: usize) {
         let p = position.saturating_add(1) as u16;
         print!("{}", termion::cursor::Goto(0, p));
     }
-    pub fn move_cursor_vertical(&mut self, position: usize) {
-        let p = position.saturating_add(1) as u16;
-        print!("{}", termion::cursor::Goto(self.x, p));
+    pub fn move_cursor_up(&self, position: usize) {
+        let y = (self.y + 1 + position as u16).saturating_sub(1);
+        print!("{}", termion::cursor::Goto(self.x, y));
+    }
+
+    pub fn move_cursor_down(&self, position: usize) {
+        let y = (self.y + position as u16).saturating_add(1);
+        print!("{}", termion::cursor::Goto(self.x, y));
     }
 
     pub fn move_cursor_horizontal(&mut self, position: usize) {

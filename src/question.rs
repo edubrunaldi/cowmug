@@ -1,30 +1,43 @@
-#[derive(Clone)]
-pub struct Question {
+pub struct QuestionList {
     question: String,
-    answer: Option<bool>,
+    choices: Vec<String>,
+    answer: Option<usize>,
 }
 
-impl Question {
+impl QuestionList {
     pub fn new() -> Self {
-        Self {
-            question: String::from(""),
+        QuestionList {
+            question: String::new(),
+            choices: Vec::new(),
             answer: None,
         }
     }
 
-    pub fn set_question(&mut self, question: String) {
-        self.question = question;
+    pub fn question_mut(&mut self) -> &mut String {
+        &mut self.question
     }
 
-    pub fn get_question(&self) -> &String {
+    pub fn question(&self) -> &String {
         &self.question
     }
 
-    pub fn set_answer(&mut self, answer: bool) {
-        self.answer = Some(answer);
+    pub fn answer_mut(&mut self) -> &mut Option<usize> {
+        &mut self.answer
     }
 
-    pub fn get_answer(&self) -> Option<bool> {
-        self.answer
+    pub fn answer(&self) -> &Option<usize> {
+        &self.answer
+    }
+
+    pub fn add_choice(&mut self, choice: String) {
+        self.choices.push(choice);
+    }
+
+    pub fn add_choices(&mut self, choices: Vec<String>) {
+        self.choices.extend(choices);
+    }
+
+    pub fn choices(&self) -> &Vec<String> {
+        &self.choices
     }
 }
