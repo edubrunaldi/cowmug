@@ -1,40 +1,6 @@
-# CowMug
-
-![License]
-
-`cowmod` provide an interactive command line user interface to ask
-questions to user.
-## !!!! It's on early development and it isn't considered stable yet !!!!
-
-
-## Usage
-
-Add the following to your `Cargo.toml`:
-
-```toml
-[dependencies]
-cowmug = "0.0.1"
-```
-
-## License
-
-This project is licensed under either of
-
-* [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-  ([LICENSE-APACHE](https://github.com/rust-lang/libc/blob/master/LICENSE-APACHE))
-
-* [MIT License](https://opensource.org/licenses/MIT)
-  ([LICENSE-MIT](https://github.com/rust-lang/libc/blob/master/LICENSE-MIT))
-
-at your option.
-
-## Example
-this example can be find at examples/sample.rs
-
-```rust
-extern crate cow_mug;
-use cow_mug::Prompt;
-use cow_mug::Question;
+extern crate cowmug;
+use cowmug::Prompt;
+use cowmug::Question;
 fn main() {
     let mut list_questions: Vec<Question> = Vec::new();
     let mut pizza_size = Question::new(String::from("Choose the size of your pizza: "));
@@ -58,7 +24,7 @@ fn main() {
     let answer_size = list_questions.get(0).unwrap().string_answer().unwrap();
     let answer_flavor = list_questions.get(1).unwrap().string_answer().unwrap();
     let mut choices_is_correct = Question::new(format!(
-        "You choose pizza {} with {}, you confirm it?",
+        "You choose pizza {} with {}, you confirm?",
         answer_size, answer_flavor
     ));
     choices_is_correct.add_choice(String::from("yes"));
@@ -75,7 +41,3 @@ fn main() {
         }
     }
 }
-
-```
-
-[License]: https://img.shields.io/crates/l/libc.svg
