@@ -75,7 +75,8 @@ fn main() {
         }
     }
 }
-
 ```
+
+![Alt Text](https://media.giphy.com/media/lP4PTXOYW8duCMoc2s/giphy.gif)
 
 [License]: https://img.shields.io/crates/l/libc.svg
