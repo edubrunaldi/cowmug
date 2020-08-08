@@ -58,8 +58,15 @@ impl Prompt {
 
     fn draw(&mut self, question: &QuestionList) {
         self.terminal.writeln(question.question().as_str()).unwrap();
-        for choice in question.choices() {
-            self.terminal.writeln(choice.as_str()).unwrap();
+
+        for i in 0..question.choices().len() {
+            let mut printable_choice = if i == self.cursor_position {
+                String::from("> ")
+            } else {
+                String::from("  ")
+            };
+            printable_choice.push_str(question.choices().get(i).unwrap().as_str());
+            self.terminal.writeln(printable_choice.as_str()).unwrap();
         }
     }
 
