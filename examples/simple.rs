@@ -3,30 +3,41 @@ use cow_mug::Prompt;
 use cow_mug::QuestionList;
 
 fn main() {
-    let mut v: Vec<QuestionList> = Vec::new();
-    let mut q = QuestionList::new();
-    *q.question_mut() = String::from("Choose pizza:");
-    q.add_choice(String::from("peperoni"));
-    q.add_choice(String::from("4 cheese"));
-    q.add_choice(String::from("chicken"));
+    let mut list_questions: Vec<QuestionList> = Vec::new();
+    let mut pizza_size = QuestionList::new(String::from("Choose the size of your pizza: "));
+    pizza_size.add_choice(String::from("Large"));
+    pizza_size.add_choice(String::from("Medium"));
+    pizza_size.add_choice(String::from("Small"));
+    list_questions.push(pizza_size);
 
-    v.push(q);
+    let mut pizza_flavor = QuestionList::new(String::from("Choose pizza:"));
+    pizza_flavor.add_choice(String::from("peperoni"));
+    pizza_flavor.add_choice(String::from("4 cheese"));
+    pizza_flavor.add_choice(String::from("chicken"));
+    list_questions.push(pizza_flavor);
 
     let mut prompt = Prompt::new();
-    prompt
-        .exec(&mut v)
-        .ok()
-        .expect("Error While using prompt.exec");
+    prompt.exec(&mut list_questions).unwrap();
 
-    for i in v {
-        if let Some(answer) = i.answer() {
-            println!(
-                "question: {} \n index answer: {:?}, answer: {:?}",
-                i.question(),
-                i.answer(),
-                i.choices().get(*answer)
-            );
+    let answer_size = list_questions.get(0).unwrap().answer_string().unwrap();
+    let answer_flavor = list_questions.get(1).unwrap().answer_string().unwrap();
+    let mut choices_is_correct = QuestionList::new(format!(
+        "You choose pizza {} with {}, you confirm?",
+        answer_size, answer_flavor
+    ));
+    choices_is_correct.add_choice(String::from("yes"));
+    choices_is_correct.add_choice(String::from("no"));
+    list_questions.clear();
+    list_questions.push(choices_is_correct);
+    prompt.exec(&mut list_questions).unwrap();
+
+    if let Some(is_correct) = list_questions.get(0).unwrap().answer_string() {
+        if is_correct.as_str() == "yes" {
+            println!("Great! See ya");
+        } else {
+            println!("Thats is terrible!! =/ ");
         }
     }
+
     return;
 }

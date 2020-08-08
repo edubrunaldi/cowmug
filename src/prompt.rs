@@ -1,7 +1,5 @@
-use crate::CursorMove;
-use crate::QuestionList;
 use crate::Terminal;
-use std::{thread, time};
+use crate::{Answer, QuestionList};
 use termion::event::Key;
 
 pub struct Prompt {
@@ -32,7 +30,13 @@ impl Prompt {
                 self.refresh_screen(&question);
                 self.process_keypress(question.choices().len()).unwrap();
                 if self.next_question {
-                    *question.answer_mut() = Some(self.cursor_position);
+                    *question.answer_mut() = Some(Answer {
+                        index: self.cursor_position,
+                        answer: format!(
+                            "{}",
+                            question.choices().get(self.cursor_position).unwrap()
+                        ),
+                    });
                 }
             }
         }
